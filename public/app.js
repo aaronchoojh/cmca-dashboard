@@ -40,7 +40,6 @@ async function loadFromSheets() {
 function parseDate(str) {
   if (!str) return '';
   const s = str.trim();
-  // ISO format already
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
   const months = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
   const parts = s.split(/[\s\/\-]/);
@@ -54,8 +53,8 @@ function parseDate(str) {
     d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]);
   }
   if (isNaN(d)||isNaN(m)||isNaN(y)) return '';
-  const date = new Date(y, m, d);
-  return isNaN(date.getTime()) ? '' : date.toISOString().split('T')[0];
+  // Format as YYYY-MM-DD without any timezone conversion
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
 
 function parseSheetRows(rows) {
@@ -108,8 +107,10 @@ function daysDiff(dateStr) {
 
 function fmtDate(dateStr) {
   if (!dateStr) return '—';
-  const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  // Parse the parts directly to avoid any timezone shifting
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d} ${months[m-1]} ${y}`;
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
