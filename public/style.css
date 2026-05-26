@@ -390,3 +390,61 @@ tr.group-divider td {
   border: 1px solid var(--danger-text);
 }
 .del-confirm p { font-size: 14px; margin-bottom: 1rem; line-height: 1.5; }
+
+/* ── Chip action buttons ── */
+.chip-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.chip-btn {
+  flex: 1;
+  min-width: 0;
+  height: 26px;
+  padding: 0 7px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.chip-btn.renew {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-text);
+}
+.chip-btn.renew:hover {
+  background: var(--success-text);
+  color: #fff;
+}
+
+.chip-btn.change {
+  background: var(--info-bg);
+  color: var(--info-text);
+  border-color: var(--info-text);
+}
+.chip-btn.change:hover {
+  background: var(--info-text);
+  color: #fff;
+}
+
+.chip-btn.dropout {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-color: var(--danger-text);
+}
+.chip-btn.dropout:hover {
+  background: var(--danger-text);
+  color: #fff;
+}
+
+.renewal-chip { min-width: 180px; }
