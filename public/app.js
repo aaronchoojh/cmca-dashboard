@@ -118,16 +118,65 @@ function renderCards() {
   const active = data.filter(r => r.status === 'Active');
   const gold = active.filter(r => r.tier === 'Gold').length;
   const silver = active.filter(r => r.tier === 'Silver').length;
-  const monthly = active.filter(r => r.term === 'Monthly').length;
-  const yearly = active.filter(r => r.term === 'Yearly').length;
+  const goldMonthly = active.filter(r => r.tier === 'Gold' && r.term === 'Monthly').length;
+  const goldYearly = active.filter(r => r.tier === 'Gold' && r.term === 'Yearly').length;
+  const silverMonthly = active.filter(r => r.tier === 'Silver' && r.term === 'Monthly').length;
+  const silverYearly = active.filter(r => r.tier === 'Silver' && r.term === 'Yearly').length;
   const paused = data.filter(r => r.status === 'Paused').length;
   document.getElementById('cards').innerHTML = `
-    <div class="card"><div class="label">Total subscribers</div><div class="value">${data.length}</div><div class="sub">all statuses</div></div>
-    <div class="card accent-green"><div class="label">Active</div><div class="value">${active.length}</div><div class="sub">${paused} paused</div></div>
-    <div class="card accent-gold"><div class="label">Gold tier</div><div class="value">${gold}</div><div class="sub">active only</div></div>
-    <div class="card"><div class="label">Silver tier</div><div class="value">${silver}</div><div class="sub">active only</div></div>
-    <div class="card accent-blue"><div class="label">Yearly plans</div><div class="value">${yearly}</div><div class="sub">active only</div></div>
-    <div class="card"><div class="label">Monthly plans</div><div class="value">${monthly}</div><div class="sub">active only</div></div>`;
+    <div class="summary-card">
+      <div class="summary-top">
+        <div class="summary-active">
+          <div class="summary-active-label">Active subscribers</div>
+          <div class="summary-active-val">${active.length}</div>
+          <div class="summary-active-sub">across ${gold} Gold · ${silver} Silver</div>
+        </div>
+        <div class="summary-paused-pill">
+          <i class="ti ti-pause" aria-hidden="true"></i>
+          ${paused} paused
+        </div>
+      </div>
+      <div class="summary-tiers">
+        <div class="summary-tier gold">
+          <div class="summary-tier-accent"></div>
+          <div class="summary-tier-header">
+            <span class="summary-tier-name">Gold tier</span>
+            <span class="summary-tier-badge gold">Gold</span>
+          </div>
+          <div class="summary-tier-count">${gold}</div>
+          <div class="summary-tier-breakdown">
+            <div class="summary-breakdown-item">
+              <div class="summary-breakdown-dot monthly"></div>
+              <span><span class="summary-breakdown-val">${goldMonthly}</span> monthly</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-breakdown-item">
+              <div class="summary-breakdown-dot yearly"></div>
+              <span><span class="summary-breakdown-val">${goldYearly}</span> yearly</span>
+            </div>
+          </div>
+        </div>
+        <div class="summary-tier silver">
+          <div class="summary-tier-accent"></div>
+          <div class="summary-tier-header">
+            <span class="summary-tier-name">Silver tier</span>
+            <span class="summary-tier-badge silver">Silver</span>
+          </div>
+          <div class="summary-tier-count">${silver}</div>
+          <div class="summary-tier-breakdown">
+            <div class="summary-breakdown-item">
+              <div class="summary-breakdown-dot monthly"></div>
+              <span><span class="summary-breakdown-val">${silverMonthly}</span> monthly</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-breakdown-item">
+              <div class="summary-breakdown-dot yearly"></div>
+              <span><span class="summary-breakdown-val">${silverYearly}</span> yearly</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
 }
 
 // ─── Date math helpers ───────────────────────────────────────────────────────
