@@ -152,7 +152,7 @@ function renderCards() {
       </div>
       <div class="slim-spacer"></div>
       <div class="slim-stat">
-        <div class="slim-icon paused"><i class="ti ti-pause" aria-hidden="true"></i></div>
+        <div class="slim-icon paused"><i class="ti ti-player-pause" aria-hidden="true"></i></div>
         <div class="slim-text">
           <div class="slim-label">Paused</div>
           <div class="slim-val">${paused}</div>
