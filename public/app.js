@@ -164,17 +164,22 @@ function renderRenewals() {
     const label = r.days === 0 ? 'Today' : r.days === 1 ? 'Tomorrow' : `In ${r.days} days`;
     const altTerm = r.term === 'Monthly' ? 'Yearly' : 'Monthly';
     return `<div class="renewal-chip ${cls}" id="chip-${r.id}">
-      <div class="ex">${r.name}</div>
-      <div class="date">${fmtDate(r.due)}</div>
-      <div class="days">${label} · ${r.tier} · ${r.term}</div>
+      <div class="chip-header">
+        <div class="chip-info">
+          <div class="ex">${r.name}</div>
+          <div class="date">${fmtDate(r.due)}</div>
+          <div class="days">${label} · ${r.tier} · ${r.term}</div>
+        </div>
+        <button class="chip-switch" onclick="actionChangePlan(${r.id})" title="Switch to ${altTerm} plan">
+          <i class="ti ti-arrows-exchange"></i>
+          <span class="chip-switch-tooltip">Switch to ${altTerm}</span>
+        </button>
+      </div>
       <div class="chip-actions">
-        <button class="chip-btn renew" onclick="actionRenew(${r.id})" title="Mark as renewed — advances due date by 1 ${r.term === 'Monthly' ? 'month' : 'year'}">
+        <button class="chip-btn renew" onclick="actionRenew(${r.id})">
           <i class="ti ti-check"></i> Renewed
         </button>
-        <button class="chip-btn change" onclick="actionChangePlan(${r.id})" title="Switch to ${altTerm}">
-          <i class="ti ti-arrows-exchange"></i> → ${altTerm}
-        </button>
-        <button class="chip-btn dropout" onclick="actionDropout(${r.id})" title="Mark as dropped out">
+        <button class="chip-btn dropout" onclick="actionDropout(${r.id})">
           <i class="ti ti-x"></i> Dropped out
         </button>
       </div>
