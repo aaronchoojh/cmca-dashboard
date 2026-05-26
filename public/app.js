@@ -40,6 +40,7 @@ async function loadFromSheets() {
 function parseDate(str) {
   if (!str) return '';
   const s = str.trim();
+  // ISO format already
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
   const months = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
   const parts = s.split(/[\s\/\-]/);
@@ -53,7 +54,6 @@ function parseDate(str) {
     d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]);
   }
   if (isNaN(d)||isNaN(m)||isNaN(y)) return '';
-  // Format as YYYY-MM-DD without any timezone conversion
   return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
 
@@ -108,10 +108,9 @@ function daysDiff(dateStr) {
 
 function fmtDate(dateStr) {
   if (!dateStr) return '—';
-  // Parse the parts directly to avoid any timezone shifting
   const [y, m, d] = dateStr.split('-').map(Number);
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${d} ${months[m-1]} ${y}`;
+  return d + ' ' + months[m-1] + ' ' + y;
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
@@ -160,14 +159,29 @@ function getFiltered() {
   const fTier = document.getElementById('f-tier').value;
   const fTerm = document.getElementById('f-term').value;
   const fType = document.getElementById('f-type').value;
-  return data.filter(r => {
+  const filtered = data.filter(r => {
     if (search && !r.name.toLowerCase().includes(search)) return false;
     if (fStatus && r.status !== fStatus) return false;
     if (fTier && r.tier !== fTier) return false;
     if (fTerm && r.term !== fTerm) return false;
     if (fType && r.type !== fType) return false;
     return true;
-  }).sort((a, b) => {
+  });
+  if (sortKey === 'due') {
+    const statusOrder = { 'Active': 0, 'Pending': 1, 'Paused': 2 };
+    const termOrder = { 'Monthly': 0, 'Yearly': 1 };
+    return filtered.sort((a, b) => {
+      const aSO = statusOrder[a.status] ?? 9, bSO = statusOrder[b.status] ?? 9;
+      if (aSO !== bSO) return aSO - bSO;
+      if (a.status === 'Active' && b.status === 'Active') {
+        const aTO = termOrder[a.term] ?? 9, bTO = termOrder[b.term] ?? 9;
+        if (aTO !== bTO) return aTO - bTO;
+      }
+      const ad = a.due || 'zzzz', bd = b.due || 'zzzz';
+      return ad < bd ? -1 : ad > bd ? 1 : 0;
+    });
+  }
+  return filtered.sort((a, b) => {
     const av = a[sortKey] || '', bv = b[sortKey] || '';
     return av < bv ? -sortDir : av > bv ? sortDir : 0;
   });
