@@ -392,27 +392,72 @@ tr.group-divider td {
 .del-confirm p { font-size: 14px; margin-bottom: 1rem; line-height: 1.5; }
 
 /* ── Chip action buttons ── */
+.renewal-chip { min-width: 200px; }
+
+.chip-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.chip-info { flex: 1; min-width: 0; }
+
+/* Switch plan — subtle icon top-right, tooltip on hover */
+.chip-switch {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  transition: all 0.15s;
+  margin-top: 1px;
+}
+.chip-switch:hover {
+  background: var(--info-bg);
+  color: var(--info-text);
+  border-color: var(--info-text);
+}
+.chip-switch-tooltip {
+  display: none;
+  position: absolute;
+  top: 110%; right: 0;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 11px; font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+.chip-switch:hover .chip-switch-tooltip { display: block; }
+
+/* Primary action row */
 .chip-actions {
   display: flex;
-  gap: 4px;
-  margin-top: 8px;
-  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .chip-btn {
   flex: 1;
-  min-width: 0;
-  height: 26px;
-  padding: 0 7px;
-  font-size: 11px;
+  height: 30px;
+  padding: 0 8px;
+  font-size: 12px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 7px;
   border: 1px solid transparent;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   white-space: nowrap;
   transition: all 0.15s;
 }
@@ -425,16 +470,8 @@ tr.group-divider td {
 .chip-btn.renew:hover {
   background: var(--success-text);
   color: #fff;
-}
-
-.chip-btn.change {
-  background: var(--info-bg);
-  color: var(--info-text);
-  border-color: var(--info-text);
-}
-.chip-btn.change:hover {
-  background: var(--info-text);
-  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .chip-btn.dropout {
@@ -445,6 +482,6 @@ tr.group-divider td {
 .chip-btn.dropout:hover {
   background: var(--danger-text);
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
-
-.renewal-chip { min-width: 180px; }
