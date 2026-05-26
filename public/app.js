@@ -40,6 +40,7 @@ async function loadFromSheets() {
 function parseDate(str) {
   if (!str) return '';
   const s = str.trim();
+  // ISO format already
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
   const months = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
   const parts = s.split(/[\s\/\-]/);
@@ -53,15 +54,16 @@ function parseDate(str) {
     d = parseInt(parts[0]); m = parseInt(parts[1])-1; y = parseInt(parts[2]);
   }
   if (isNaN(d)||isNaN(m)||isNaN(y)) return '';
-  // Format as YYYY-MM-DD without any timezone conversion
-  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  const date = new Date(y, m, d);
+  return isNaN(date.getTime()) ? '' : date.toISOString().split('T')[0];
 }
 
 function parseSheetRows(rows) {
   const parsed = [];
   let currentStatus = 'Active';
   let id = 0;
-  for (const row of rows) {
+  for (let sheetRow = 0; sheetRow < rows.length; sheetRow++) {
+    const row = rows[sheetRow];
     if (!row[0]) continue;
     const first = (row[0]||'').trim();
     if (['Monthly','Yearly','CEX/DEX'].includes(first)) continue;
@@ -79,7 +81,7 @@ function parseSheetRows(rows) {
         renewal: parseDate(row[5]||''),
         due: parseDate(row[6]||''),
         status: (row[7]||'').trim() || currentStatus,
-        _rowIndex: id, // track original row for updates
+        _rowIndex: sheetRow + 1, // actual 1-based sheet row number
       });
     }
   }
@@ -107,10 +109,8 @@ function daysDiff(dateStr) {
 
 function fmtDate(dateStr) {
   if (!dateStr) return '—';
-  // Parse the parts directly to avoid any timezone shifting
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  return `${d} ${months[m-1]} ${y}`;
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
