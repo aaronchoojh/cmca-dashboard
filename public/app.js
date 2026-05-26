@@ -130,6 +130,23 @@ function renderCards() {
     <div class="card"><div class="label">Monthly plans</div><div class="value">${monthly}</div><div class="sub">active only</div></div>`;
 }
 
+// ─── Date math helpers ───────────────────────────────────────────────────────
+function advanceDate(dateStr, term) {
+  // Advances a YYYY-MM-DD date by 1 month or 1 year without timezone issues
+  const [y, m, d] = dateStr.split('-').map(Number);
+  let ny = y, nm = m;
+  if (term === 'Monthly') { nm += 1; if (nm > 12) { nm = 1; ny += 1; } }
+  else { ny += 1; }
+  return `${ny}-${String(nm).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function fmtSheetDate(dateStr) {
+  // Format YYYY-MM-DD back to "D Mon YYYY" for writing to sheet
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${d} ${months[m-1]} ${y}`;
+}
+
 function renderRenewals() {
   const upcoming = data
     .filter(r => r.status === 'Active' && r.due)
@@ -145,12 +162,71 @@ function renderRenewals() {
   document.getElementById('renewals-bar').innerHTML = upcoming.map(r => {
     const cls = r.days <= 7 ? 'urgent' : r.days <= 14 ? 'soon' : '';
     const label = r.days === 0 ? 'Today' : r.days === 1 ? 'Tomorrow' : `In ${r.days} days`;
-    return `<div class="renewal-chip ${cls}">
+    const altTerm = r.term === 'Monthly' ? 'Yearly' : 'Monthly';
+    return `<div class="renewal-chip ${cls}" id="chip-${r.id}">
       <div class="ex">${r.name}</div>
       <div class="date">${fmtDate(r.due)}</div>
-      <div class="days">${label} · ${r.tier} ${r.term}</div>
+      <div class="days">${label} · ${r.tier} · ${r.term}</div>
+      <div class="chip-actions">
+        <button class="chip-btn renew" onclick="actionRenew(${r.id})" title="Mark as renewed — advances due date by 1 ${r.term === 'Monthly' ? 'month' : 'year'}">
+          <i class="ti ti-check"></i> Renewed
+        </button>
+        <button class="chip-btn change" onclick="actionChangePlan(${r.id})" title="Switch to ${altTerm}">
+          <i class="ti ti-arrows-exchange"></i> → ${altTerm}
+        </button>
+        <button class="chip-btn dropout" onclick="actionDropout(${r.id})" title="Mark as dropped out">
+          <i class="ti ti-x"></i> Dropped out
+        </button>
+      </div>
     </div>`;
   }).join('');
+}
+
+// ─── Renewal actions ──────────────────────────────────────────────────────────
+async function actionRenew(id) {
+  const r = data.find(x => x.id === id);
+  if (!r) return;
+  const newRenewal = r.due; // old due date becomes new current cycle
+  const newDue = advanceDate(r.due, r.term);
+  await _saveRenewalAction(r, { renewal: newRenewal, due: newDue, status: 'Active', term: r.term });
+}
+
+async function actionChangePlan(id) {
+  const r = data.find(x => x.id === id);
+  if (!r) return;
+  const newTerm = r.term === 'Monthly' ? 'Yearly' : 'Monthly';
+  const newRenewal = r.due;
+  const newDue = advanceDate(r.due, newTerm);
+  if (!confirm(`Switch ${r.name} from ${r.term} to ${newTerm}?\nNew due date: ${fmtDate(newDue)}`)) return;
+  await _saveRenewalAction(r, { renewal: newRenewal, due: newDue, status: 'Active', term: newTerm });
+}
+
+async function actionDropout(id) {
+  const r = data.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Mark ${r.name} as dropped out? Their status will be set to Paused.`)) return;
+  await _saveRenewalAction(r, { renewal: r.renewal, due: r.due, status: 'Paused', term: r.term });
+}
+
+async function _saveRenewalAction(r, changes) {
+  const updated = { ...r, ...changes };
+  setSyncStatus('loading', 'Updating...');
+  try {
+    await apiCall('update', {
+      rowIndex: r._rowIndex,
+      row: [
+        updated.type, updated.name, updated.tier, updated.term,
+        updated.contract,
+        fmtSheetDate(updated.renewal),
+        fmtSheetDate(updated.due),
+        updated.status
+      ]
+    });
+    await loadFromSheets();
+  } catch (e) {
+    showError(`Could not update: ${e.message}`);
+    setSyncStatus('err', 'Update failed');
+  }
 }
 
 function getFiltered() {
