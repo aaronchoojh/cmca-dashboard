@@ -124,56 +124,38 @@ function renderCards() {
   const silverYearly = active.filter(r => r.tier === 'Silver' && r.term === 'Yearly').length;
   const paused = data.filter(r => r.status === 'Paused').length;
   document.getElementById('cards').innerHTML = `
-    <div class="summary-card">
-      <div class="summary-top">
-        <div class="summary-active">
-          <div class="summary-active-label">Active subscribers</div>
-          <div class="summary-active-val">${active.length}</div>
-          <div class="summary-active-sub">across ${gold} Gold · ${silver} Silver</div>
-        </div>
-        <div class="summary-paused-pill">
-          <i class="ti ti-pause" aria-hidden="true"></i>
-          ${paused} paused
+    <div class="slim-bar">
+      <div class="slim-stat">
+        <div class="slim-icon active"><i class="ti ti-users" aria-hidden="true"></i></div>
+        <div class="slim-text">
+          <div class="slim-label">Active</div>
+          <div class="slim-val">${active.length}</div>
         </div>
       </div>
-      <div class="summary-tiers">
-        <div class="summary-tier gold">
-          <div class="summary-tier-accent"></div>
-          <div class="summary-tier-header">
-            <span class="summary-tier-name">Gold tier</span>
-            <span class="summary-tier-badge gold">Gold</span>
-          </div>
-          <div class="summary-tier-count">${gold}</div>
-          <div class="summary-tier-breakdown">
-            <div class="summary-breakdown-item">
-              <div class="summary-breakdown-dot monthly"></div>
-              <span><span class="summary-breakdown-val">${goldMonthly}</span> monthly</span>
-            </div>
-            <div class="summary-divider"></div>
-            <div class="summary-breakdown-item">
-              <div class="summary-breakdown-dot yearly"></div>
-              <span><span class="summary-breakdown-val">${goldYearly}</span> yearly</span>
-            </div>
-          </div>
+      <div class="slim-sep"></div>
+      <div class="slim-stat">
+        <div class="slim-icon gold"><i class="ti ti-star" aria-hidden="true"></i></div>
+        <div class="slim-text">
+          <div class="slim-label">Gold</div>
+          <div class="slim-val">${gold}</div>
+          <div class="slim-sub">${goldMonthly} monthly · ${goldYearly} yearly</div>
         </div>
-        <div class="summary-tier silver">
-          <div class="summary-tier-accent"></div>
-          <div class="summary-tier-header">
-            <span class="summary-tier-name">Silver tier</span>
-            <span class="summary-tier-badge silver">Silver</span>
-          </div>
-          <div class="summary-tier-count">${silver}</div>
-          <div class="summary-tier-breakdown">
-            <div class="summary-breakdown-item">
-              <div class="summary-breakdown-dot monthly"></div>
-              <span><span class="summary-breakdown-val">${silverMonthly}</span> monthly</span>
-            </div>
-            <div class="summary-divider"></div>
-            <div class="summary-breakdown-item">
-              <div class="summary-breakdown-dot yearly"></div>
-              <span><span class="summary-breakdown-val">${silverYearly}</span> yearly</span>
-            </div>
-          </div>
+      </div>
+      <div class="slim-sep"></div>
+      <div class="slim-stat">
+        <div class="slim-icon silver"><i class="ti ti-medal" aria-hidden="true"></i></div>
+        <div class="slim-text">
+          <div class="slim-label">Silver</div>
+          <div class="slim-val">${silver}</div>
+          <div class="slim-sub">${silverMonthly} monthly · ${silverYearly} yearly</div>
+        </div>
+      </div>
+      <div class="slim-spacer"></div>
+      <div class="slim-stat">
+        <div class="slim-icon paused"><i class="ti ti-pause" aria-hidden="true"></i></div>
+        <div class="slim-text">
+          <div class="slim-label">Paused</div>
+          <div class="slim-val">${paused}</div>
         </div>
       </div>
     </div>`;
