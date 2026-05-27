@@ -139,81 +139,113 @@ body {
 }
 .theme-btn:hover { background: var(--bg2); color: var(--text); }
 
-/* ── Slim summary bar ── */
-.cards { margin-bottom: 1.25rem; }
-
-.slim-bar {
+/* ── Combined overview panel ── */
+.overview-panel {
+  display: flex;
+  align-items: stretch;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 0;
+  padding: 14px 18px;
+  margin-bottom: 1.25rem;
   box-shadow: var(--shadow);
+  gap: 0;
+  min-height: 0;
 }
 
-.slim-sep {
-  width: 1px; height: 36px;
-  background: var(--border);
+/* Left: stats column */
+.overview-stats {
   flex-shrink: 0;
-}
-
-.slim-spacer { flex: 1; }
-
-.slim-stat {
+  width: 150px;
+  border-right: 1px solid var(--border);
+  padding-right: 14px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+.overview-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text3);
+}
+
+.overview-tier-row {
+  display: flex;
   gap: 10px;
-  padding: 0 20px;
-  flex-shrink: 0;
-}
-.slim-stat:first-child { padding-left: 0; }
-.slim-stat:last-child { padding-right: 0; }
-
-.slim-icon {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0;
-}
-.slim-icon.active { background: var(--success-bg); color: var(--success-text); }
-.slim-icon.gold { background: var(--gold-bg); color: var(--gold-text); }
-.slim-icon.silver { background: var(--silver-bg); color: var(--silver-text); }
-.slim-icon.paused { background: var(--bg2); color: var(--text2); }
-
-.slim-label {
-  font-size: 11px; font-weight: 600;
-  color: var(--text2); text-transform: uppercase;
-  letter-spacing: 0.05em; line-height: 1; margin-bottom: 3px;
-}
-.slim-val {
-  font-size: 20px; font-weight: 700;
-  color: var(--text); line-height: 1;
-}
-.slim-stat .slim-icon.active ~ .slim-text .slim-val { color: var(--success-text); }
-.slim-stat .slim-icon.gold ~ .slim-text .slim-val { color: var(--gold-text); }
-.slim-stat .slim-icon.silver ~ .slim-text .slim-val { color: var(--silver-text); }
-.slim-sub {
-  font-size: 11px; color: var(--text3);
-  margin-top: 2px; line-height: 1;
 }
 
-/* ── Section title ── */
-.section-title {
-  font-size: 11px; font-weight: 700; color: var(--text2);
-  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
-  display: flex; align-items: center; gap: 6px;
+.ov-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
-.section-title::after {
-  content: ''; flex: 1; height: 1px; background: var(--border);
+
+.ov-label {
+  font-size: 10px;
+  color: var(--text3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ov-num {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.ov-num.gold  { color: var(--gold-text); }
+.ov-num.silver { color: var(--silver-text); }
+.ov-num.active { color: var(--success-text); font-size: 16px; }
+.ov-num.paused { color: var(--text3); font-size: 16px; }
+
+.ov-sub {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+.ov-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2px 0;
+}
+
+.ov-bottom-row {
+  display: flex;
+  gap: 14px;
+}
+
+/* Right: renewals column */
+.overview-renewals {
+  flex: 1;
+  min-width: 0;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.overview-renewals-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text3);
+  margin-bottom: 8px;
 }
 
 /* ── Renewals bar ── */
 .renewals-bar {
-  display: flex; gap: 10px; margin-bottom: 1.5rem;
+  display: flex; gap: 10px;
   overflow-x: auto; padding-bottom: 4px;
 }
+.renewals-bar::-webkit-scrollbar { height: 4px; }
+.renewals-bar::-webkit-scrollbar-track { background: transparent; }
+.renewals-bar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
 .renewal-chip {
   flex-shrink: 0;
@@ -304,7 +336,6 @@ tbody tr:last-child { border-bottom: none; }
 tbody tr:hover { background: var(--cmc-light); }
 tbody td { padding: 10px 14px; vertical-align: middle; }
 
-/* group divider for paused section */
 tr.group-divider td {
   padding: 6px 14px;
   font-size: 11px; font-weight: 700; text-transform: uppercase;
@@ -420,7 +451,6 @@ tr.group-divider td {
 
 .chip-info { flex: 1; min-width: 0; }
 
-/* Switch plan — subtle icon top-right, tooltip on hover */
 .chip-switch {
   flex-shrink: 0;
   width: 26px; height: 26px;
@@ -455,7 +485,6 @@ tr.group-divider td {
 }
 .chip-switch:hover .chip-switch-tooltip { display: block; }
 
-/* Primary action row */
 .chip-actions {
   display: flex;
   gap: 6px;
