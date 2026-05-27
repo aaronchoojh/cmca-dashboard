@@ -1,8 +1,4 @@
 // ─── Config ───────────────────────────────────────────────────────────────────
-// These are set as Netlify environment variables — never hardcode secrets here.
-// SHEET_ID and API_KEY are injected by the Netlify function (sheets.js).
-// The frontend calls /.netlify/functions/sheets for all sheet operations.
-
 const today = new Date();
 let data = [];
 let sortKey = 'due', sortDir = 1;
@@ -40,7 +36,6 @@ async function loadFromSheets() {
 function parseDate(str) {
   if (!str) return '';
   const s = str.trim();
-  // ISO format already
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
   const months = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11 };
   const parts = s.split(/[\s\/\-]/);
@@ -80,7 +75,7 @@ function parseSheetRows(rows) {
         renewal: parseDate(row[5]||''),
         due: parseDate(row[6]||''),
         status: (row[7]||'').trim() || currentStatus,
-        _rowIndex: sheetRow + 1, // actual 1-based sheet row number
+        _rowIndex: sheetRow + 1,
       });
     }
   }
@@ -123,47 +118,36 @@ function renderCards() {
   const silverMonthly = active.filter(r => r.tier === 'Silver' && r.term === 'Monthly').length;
   const silverYearly = active.filter(r => r.tier === 'Silver' && r.term === 'Yearly').length;
   const paused = data.filter(r => r.status === 'Paused').length;
+
   document.getElementById('cards').innerHTML = `
-    <div class="slim-bar">
-      <div class="slim-stat">
-        <div class="slim-icon active"><i class="ti ti-users" aria-hidden="true"></i></div>
-        <div class="slim-text">
-          <div class="slim-label">Active</div>
-          <div class="slim-val">${active.length}</div>
-        </div>
+    <div class="overview-label">Overview</div>
+    <div class="overview-tier-row">
+      <div class="ov-stat">
+        <span class="ov-label">Gold</span>
+        <span class="ov-num gold">${gold}</span>
+        <span class="ov-sub">${goldMonthly}m · ${goldYearly}y</span>
       </div>
-      <div class="slim-sep"></div>
-      <div class="slim-stat">
-        <div class="slim-icon gold"><i class="ti ti-star" aria-hidden="true"></i></div>
-        <div class="slim-text">
-          <div class="slim-label">Gold</div>
-          <div class="slim-val">${gold}</div>
-          <div class="slim-sub">${goldMonthly} monthly · ${goldYearly} yearly</div>
-        </div>
+      <div class="ov-stat">
+        <span class="ov-label">Silver</span>
+        <span class="ov-num silver">${silver}</span>
+        <span class="ov-sub">${silverMonthly}m · ${silverYearly}y</span>
       </div>
-      <div class="slim-sep"></div>
-      <div class="slim-stat">
-        <div class="slim-icon silver"><i class="ti ti-medal" aria-hidden="true"></i></div>
-        <div class="slim-text">
-          <div class="slim-label">Silver</div>
-          <div class="slim-val">${silver}</div>
-          <div class="slim-sub">${silverMonthly} monthly · ${silverYearly} yearly</div>
-        </div>
+    </div>
+    <div class="ov-divider"></div>
+    <div class="ov-bottom-row">
+      <div class="ov-stat">
+        <span class="ov-label">Active</span>
+        <span class="ov-num active">${active.length}</span>
       </div>
-      <div class="slim-spacer"></div>
-      <div class="slim-stat">
-        <div class="slim-icon paused"><i class="ti ti-player-pause" aria-hidden="true"></i></div>
-        <div class="slim-text">
-          <div class="slim-label">Paused</div>
-          <div class="slim-val">${paused}</div>
-        </div>
+      <div class="ov-stat">
+        <span class="ov-label">Paused</span>
+        <span class="ov-num paused">${paused}</span>
       </div>
     </div>`;
 }
 
-// ─── Date math helpers ───────────────────────────────────────────────────────
+// ─── Date math helpers ────────────────────────────────────────────────────────
 function advanceDate(dateStr, term) {
-  // Advances a YYYY-MM-DD date by 1 month or 1 year without timezone issues
   const [y, m, d] = dateStr.split('-').map(Number);
   let ny = y, nm = m;
   if (term === 'Monthly') { nm += 1; if (nm > 12) { nm = 1; ny += 1; } }
@@ -172,7 +156,6 @@ function advanceDate(dateStr, term) {
 }
 
 function fmtSheetDate(dateStr) {
-  // Format YYYY-MM-DD back to "D Mon YYYY" for writing to sheet
   const [y, m, d] = dateStr.split('-').map(Number);
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   return `${d} ${months[m-1]} ${y}`;
@@ -222,7 +205,7 @@ function renderRenewals() {
 async function actionRenew(id) {
   const r = data.find(x => x.id === id);
   if (!r) return;
-  const newRenewal = r.due; // old due date becomes new current cycle
+  const newRenewal = r.due;
   const newDue = advanceDate(r.due, r.term);
   await _saveRenewalAction(r, { renewal: newRenewal, due: newDue, status: 'Active', term: r.term });
 }
